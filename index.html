@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainability Games Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ecf0f1 0%, #e8f5e9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f0f0f0;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            min-width: 120px;
+        }
+
+        .tab-btn:hover {
+            background: #e8e8e8;
+        }
+
+        .tab-btn.active {
+            color: #22c55e;
+            border-bottom-color: #22c55e;
+            background: white;
+        }
+
+        .content {
+            padding: 30px;
+            min-height: 400px;
+        }
+
+        .game {
+            display: none;
+        }
+
+        .game.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Quiz Game */
+        .quiz-container {
+            justify-self: center;
+            max-width: 600px;
+        }
+
+        .question {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #22c55e;
+        }
+
+        .question h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .option.selected {
+            background: #22c55e;
+            color: white;
+            border-color: #22c55e;
+        }
+
+        .score {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2em;
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #16a34a;
+        }
+
+        /* Carbon Calculator */
+        .calculator-form {
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-self: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #22c55e;
+        }
+
+        .result-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box h3 {
+            color: #22c55e;
+            margin-bottom: 10px;
+        }
+
+        .result-box p {
+            font-size: 1.5em;
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        /* Recycling Sorter */
+        .sorter-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .bin {
+            width: 150px;
+            height: 200px;
+            border: 3px dashed #22c55e;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 15px;
+            background: #f0fdf4;
+            position: relative;
+            min-height: 200px;
+        }
+
+        .bin h4 {
+            text-align: center;
+            color: #22c55e;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .bin-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            min-height: 50px;
+            justify-content: center;
+        }
+
+        .item {
+            background: #ffa500;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: grab;
+            font-size: 0.85em;
+            user-select: none;
+            margin: 5px;
+        }
+
+        
+
+        .item:active {
+            cursor: grabbing;
+        }
+
+        .items-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            min-height: 60px;
+        }
+
+        .feedback {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        .feedback.correct {
+            color: #22c55e;
+        }
+
+        .feedback.incorrect {
+            color: #ef4444;
+        }
+
+        /* Memory Game */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            width: 100%;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 2.5em;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: transparent;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card.flipped {
+            color: inherit;
+            background: white;
+            border: 2px solid #22c55e;
+        }
+
+        .card.matched {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .memory-info {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Energy Saver */
+        .energy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .energy-tile {
+            background: #e8f5e9;
+            border: 2px solid #22c55e;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .energy-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(34, 197, 94, 0.2);
+        }
+
+        .energy-tile.active {
+            background: #22c55e;
+            color: white;
+        }
+
+        .energy-tile p {
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .energy-points {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .energy-info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0fdf4;
+            border-radius: 8px;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .tabs {
+                gap: 5px;
+            }
+
+            .tab-btn {
+                padding: 12px 10px;
+                font-size: 0.85em;
+                min-width: 80px;
+            }
+
+            .memory-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .energy-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 Sustainability Games</h1>
+            <p>Learn about the environment while having fun!</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(0)">Eco Quiz</button>
+            <button class="tab-btn" onclick="switchTab(1)">Carbon Calculator</button>
+            <button class="tab-btn" onclick="switchTab(2)">Recycling Sorter</button>
+            <button class="tab-btn" onclick="switchTab(3)">Memory Match</button>
+            <button class="tab-btn" onclick="switchTab(4)">Energy Saver</button>
+        </div>
+
+        <div class="content">
+            <!-- Game 1: Eco Quiz -->
+            <div class="game active" id="game-0">
+                <div class="quiz-container">
+                    <div class="score" id="quiz-score">Score: 0/5</div>
+                    <div id="quiz-content"></div>
+                </div>
+            </div>
+
+            <!-- Game 2: Carbon Calculator -->
+            <div class="game" id="game-1">
+                <div class="calculator-form">
+                    <h2>Calculate Your Carbon Footprint</h2>
+                    <div class="form-group">
+                        <label>Mode of Transport:</label>
+                        <select id="transport-type">
+                            <option value="car">Car (100g CO2/km)</option>
+                            <option value="bus">Bus (10g CO2/km)</option>
+                            <option value="bike">Bike (0g CO2/km)</option>
+                            <option value="flight">Flight (250g CO2/km)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Distance (km):</label>
+                        <input type="number" id="distance" placeholder="Enter distance" min="0">
+                    </div>
+                    <button class="btn" onclick="calculateCarbon()">Calculate</button>
+                    <div class="result-box" id="carbon-result">
+                        <h3>Your Carbon Emissions:</h3>
+                        <p id="carbon-value">0 g CO2</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game 3: Recycling Sorter -->
+            <div class="game" id="game-2">
+                <h3 style="text-align: center; margin-bottom: 20px;">Drag items to the correct bins!</h3>
+                <div class="items-area" id="items-area"></div>
+                <div class="sorter-container">
+                    <div class="bin">
+                        <h4>♻️ Plastic</h4>
+                        <div class="bin-items" data-type="plastic"></div>
+                    </div>
+                    <div class="bin">
+                        <h4>📄 Paper</h4>
+                        <div class="bin-items" data-type="paper"></div>
+                    </div>
+                    <div class="bin">
+                        <h4>🥫 Metal</h4>
+                        <div class="bin-items" data-type="metal"></div>
+                    </div>
+                    <div class="bin">
+                        <h4>🟩 Compost</h4>
+                        <div class="bin-items" data-type="compost"></div>
+                    </div>
+                </div>
+                <div class="feedback" id="sorter-feedback"></div>
+                <button class="btn reset-btn" onclick="resetSorter()">Reset</button>
+            </div>
+
+            <!-- Game 4: Memory Match -->
+            <div class="game" id="game-3">
+                <h3 style="text-align: center; margin-bottom: 20px;">Match the Sustainability Pairs!</h3>
+                <div class="memory-grid" id="memory-grid"></div>
+                <div class="memory-info">
+                    <p><strong>Moves:</strong> <span id="moves">0</span> | <strong>Matched:</strong> <span id="matched">0</span>/6</p>
+                    <button class="btn reset-btn" onclick="resetMemory()">New Game</button>
+                </div>
+            </div>
+
+            <!-- Game 5: Energy Saver -->
+            <div class="game" id="game-4">
+                <h3 style="text-align: center; margin-bottom: 20px;">Complete Energy-Saving Challenges!</h3>
+                <div class="energy-grid" id="energy-grid"></div>
+                <div class="energy-info">
+                    <p><strong>Points Earned:</strong> <span id="energy-points">0</span> / 100</p>
+                    <button class="btn reset-btn" onclick="resetEnergy()">Play Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching
+        function switchTab(tabIndex) {
+            const games = document.querySelectorAll('.game');
+            const buttons = document.querySelectorAll('.tab-btn');
+            
+            games.forEach(game => game.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            games[tabIndex].classList.add('active');
+            buttons[tabIndex].classList.add('active');
+        }
+
+        // Game 1: Eco Quiz
+        const quizQuestions = [
+            {
+                question: "Which of these is NOT a renewable energy source?",
+                options: ["Solar", "Wind", "Coal", "Hydro"],
+                correct: 2
+            },
+            {
+                question: "What percentage of Earth's oxygen is produced by oceans?",
+                options: ["30%", "50%", "70%", "10%"],
+                correct: 1
+            },
+            {
+                question: "Which country has the most rainforests?",
+                options: ["Congo", "Brazil", "Indonesia", "Australia"],
+                correct: 1
+            },
+            {
+                question: "What is the most abundant gas in the atmosphere?",
+                options: ["Oxygen", "Nitrogen", "CO2", "Hydrogen"],
+                correct: 1
+            },
+            {
+                question: "How long does it take plastic to decompose?",
+                options: ["5 years", "50 years", "500 years", "It doesn't decompose"],
+                correct: 3
+            }
+        ];
+
+        let quizScore = 0;
+        let currentQuestion = 0;
+
+        function initQuiz() {
+            quizScore = 0;
+            currentQuestion = 0;
+            displayQuizQuestion();
+        }
+
+        function displayQuizQuestion() {
+            const content = document.getElementById('quiz-content');
+            if (currentQuestion >= quizQuestions.length) {
+                content.innerHTML = `
+                    <div style="text-align: center; margin-top: 20px;">
+                        <h2>Quiz Complete!</h2>
+                        <p style="font-size: 1.5em; color: #22c55e; margin: 20px 0;">Final Score: ${quizScore}/5</p>
+                        <button class="btn" onclick="initQuiz()">Play Again</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const q = quizQuestions[currentQuestion];
+            let html = `
+                <div class="question">
+                    <h3>Question ${currentQuestion + 1}: ${q.question}</h3>
+                    <div class="options">
+            `;
+            
+            q.options.forEach((option, index) => {
+                html += `<div class="option" onclick="answerQuiz(${index})">${option}</div>`;
+            });
+            
+            html += `</div></div>`;
+            content.innerHTML = html;
+        }
+
+        function answerQuiz(selectedIndex) {
+            if (selectedIndex === quizQuestions[currentQuestion].correct) {
+                quizScore++;
+            }
+            currentQuestion++;
+            document.getElementById('quiz-score').textContent = `Score: ${quizScore}/${currentQuestion}`;
+            displayQuizQuestion();
+        }
+
+        // Game 2: Carbon Calculator
+        function calculateCarbon() {
+            const transportType = document.getElementById('transport-type').value;
+            const distance = parseFloat(document.getElementById('distance').value);
+
+            const emissions = {
+                car: 100,
+                bus: 10,
+                bike: 0,
+                flight: 250
+            };
+
+            if (distance && distance > 0) {
+                const result = emissions[transportType] * distance;
+                document.getElementById('carbon-value').textContent = `${result.toFixed(0)} g CO2`;
+                document.getElementById('carbon-result').classList.add('show');
+            }
+        }
+
+        // Game 3: Recycling Sorter
+        const recycleItems = [
+            { name: "Plastic Bottle", type: "plastic" },
+            { name: "Newspaper", type: "paper" },
+            { name: "Aluminum Can", type: "metal" },
+            { name: "Apple Core", type: "compost" },
+            { name: "Plastic Bag", type: "plastic" },
+            { name: "Cardboard", type: "paper" },
+            { name: "Steel Tin", type: "metal" },
+            { name: "Banana Peel", type: "compost" }
+        ];
+
+        let draggedItem = null;
+
+        function initSorter() {
+    const itemsArea = document.getElementById('items-area');
+    const bins = document.querySelectorAll('.bin-items');
+
+    // 🧹 Clear previous bin contents
+    bins.forEach(bin => {
+        bin.innerHTML = '';
+    });
+
+    // 🧹 Clear items area before re-rendering
+    itemsArea.innerHTML = '';
+    recycleItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.draggable = true;
+        div.textContent = item.name;
+        div.dataset.type = item.type;
+
+        div.addEventListener('dragstart', (e) => {
+            draggedItem = div;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', item.type); // ✅ required for Firefox/Edge
+            div.style.opacity = '0.5';
+        });
+
+        div.addEventListener('dragend', () => {
+            div.style.opacity = '1';
+            draggedItem = null;
+        });
+
+        itemsArea.appendChild(div);
+    });
+
+    // Add listeners to both bins and bin containers
+    document.querySelectorAll('.bin').forEach(binContainer => {
+        const bin = binContainer.querySelector('.bin-items');
+
+        binContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            binContainer.style.background = '#c8e6c9';
+        });
+
+        binContainer.addEventListener('dragleave', (e) => {
+            binContainer.style.background = '#f0fdf4';
+        });
+
+        binContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            binContainer.style.background = '#f0fdf4';
+
+            if (draggedItem) {
+                const correctType = bin.dataset.type;
+                const itemType = draggedItem.dataset.type;
+
+                if (itemType === correctType) {
+                    bin.appendChild(draggedItem);
+                    document.getElementById('sorter-feedback').textContent = '✓ Correct!';
+                    document.getElementById('sorter-feedback').classList.remove('incorrect');
+                    document.getElementById('sorter-feedback').classList.add('correct');
+                } else {
+                    document.getElementById('sorter-feedback').textContent = '✗ Wrong bin! Try again.';
+                    document.getElementById('sorter-feedback').classList.remove('correct');
+                    document.getElementById('sorter-feedback').classList.add('incorrect');
+                }
+
+                draggedItem = null;
+            }
+        });
+    });
+}
+
+
+        function resetSorter() {
+            initSorter();
+            document.getElementById('sorter-feedback').textContent = '';
+        }
+
+        // Game 4: Memory Match
+        const memoryPairs = [
+            { emoji: "🌍", label: "Earth" },
+            { emoji: "🌲", label: "Tree" },
+            { emoji: "💧", label: "Water" },
+            { emoji: "☀️", label: "Solar" },
+            { emoji: "♻️", label: "Recycle" },
+            { emoji: "🌿", label: "Leaf" }
+        ];
+
+        let memoryCards = [];
+        let flipped = [];
+        let matched = [];
+        let moves = 0;
+
+        function initMemory() {
+            const grid = document.getElementById('memory-grid');
+            grid.innerHTML = '';
+            const doubled = [...memoryPairs, ...memoryPairs];
+            memoryCards = doubled.sort(() => Math.random() - 0.5);
+            flipped = [];
+            matched = [];
+            moves = 0;
+
+            memoryCards.forEach((card, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'card';
+                btn.textContent = card.emoji;
+                btn.dataset.index = index;
+                btn.onclick = () => flipCard(index);
+                grid.appendChild(btn);
+            });
+            updateMemoryInfo();
+        }
+
+        function flipCard(index) {
+            if (flipped.length >= 2 || flipped.includes(index) || matched.includes(index)) return;
+
+            flipped.push(index);
+            document.querySelector(`[data-index="${index}"]`).classList.add('flipped');
+
+            if (flipped.length === 2) {
+                moves++;
+                const [first, second] = flipped;
+                if (memoryCards[first].label === memoryCards[second].label) {
+                    matched.push(first, second);
+                    document.querySelector(`[data-index="${first}"]`).classList.add('matched');
+                    document.querySelector(`[data-index="${second}"]`).classList.add('matched');
+                    flipped = [];
+                    updateMemoryInfo();
+                    if (matched.length === memoryCards.length) {
+                        setTimeout(() => alert(`🎉 You won in ${moves} moves!`), 300);
+                    }
+                } else {
+                    setTimeout(() => {
+                        document.querySelector(`[data-index="${first}"]`).classList.remove('flipped');
+                        document.querySelector(`[data-index="${second}"]`).classList.remove('flipped');
+                        flipped = [];
+                        updateMemoryInfo();
+                    }, 1000);
+                }
+            }
+        }
+
+        function updateMemoryInfo() {
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('matched').textContent = matched.length / 2;
+        }
+
+        function resetMemory() {
+            initMemory();
+        }
+
+        // Game 5: Energy Saver
+        const energyChallenges = [
+            { name: "Turn off lights", points: 10 },
+            { name: "Bike instead of car", points: 20 },
+            { name: "Use reusable bag", points: 15 },
+            { name: "Plant a tree", points: 25 },
+            { name: "Take shorter showers", points: 15 },
+            { name: "Use public transit", points: 15 },
+            { name: "Recycle today", points: 10 },
+            { name: "Eat less meat", points: 20 },
+            { name: "Save water", points: 10 }
+        ];
+
+        let energyPoints = 0;
+
+        function initEnergy() {
+            const grid = document.getElementById('energy-grid');
+            grid.innerHTML = '';
+            energyPoints = 0;
+
+            energyChallenges.forEach((challenge, index) => {
+                const tile = document.createElement('button');
+                tile.className = 'energy-tile';
+                tile.innerHTML = `<p>${challenge.name}</p><div class="energy-points">+${challenge.points}</div>`;
+                tile.onclick = () => completeChallenge(tile, challenge.points);
+                grid.appendChild(tile);
+            });
+            document.getElementById('energy-points').textContent = '0';
+        }
+
+        function completeChallenge(tile, points) {
+            if (!tile.classList.contains('active')) {
+                tile.classList.add('active');
+                energyPoints += points;
+                document.getElementById('energy-points').textContent = energyPoints;
+                if (energyPoints >= 100) {
+                    setTimeout(() => alert(`🎉 Amazing! You reached 100 points!`), 200);
+                }
+            }
+        }
+
+        function resetEnergy() {
+            initEnergy();
+        }
+
+        // Initialize games
+        initQuiz();
+        initSorter();
+        initMemory();
+        initEnergy();
+    </script>
+</body>
+</html>
